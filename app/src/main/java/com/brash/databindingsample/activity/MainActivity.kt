@@ -4,17 +4,13 @@ import androidx.appcompat.app.AppCompatActivity
 import android.os.Bundle
 import android.view.View
 import android.widget.Toast
-import androidx.core.content.ContentProviderCompat.requireContext
 import androidx.lifecycle.Observer
 import androidx.lifecycle.ViewModelProvider
-import androidx.lifecycle.ViewModelProviders
 import androidx.recyclerview.widget.LinearLayoutManager
 import com.brash.databindingsample.R
 import com.brash.databindingsample.adapter.RecipeAdapter
 import com.brash.databindingsample.model.Recipe
 import com.brash.databindingsample.model.Recipes
-import com.brash.databindingsample.network.Resource
-import com.brash.databindingsample.network.Status
 import com.brash.databindingsample.viewmodel.MainViewModel
 import kotlinx.android.synthetic.main.activity_main.*
 import java.util.ArrayList
@@ -26,20 +22,13 @@ class MainActivity : AppCompatActivity() {
     private var recipes: ArrayList<Recipe> = ArrayList()
     private lateinit var viewModel: MainViewModel
 
-    private val observer = Observer<Resource<Recipes>> {
-        when (it.status) {
-            Status.SUCCESS -> updateList(it.data!!)
-            Status.ERROR -> showError(it.message!!)
-            Status.LOADING -> showLoading()
-        }
-    }
 
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
         setContentView(R.layout.activity_main)
 
         viewModel =  ViewModelProvider(this).get(MainViewModel::class.java)
-        viewModel.recipe.observe(this, observer)
+        getRecipes()
         setUpRecyclerView()
     }
 
@@ -65,5 +54,17 @@ class MainActivity : AppCompatActivity() {
 
     private fun showLoading() {
         progressBar.visibility = View.VISIBLE
+    }
+
+    private fun getRecipes() {
+        showLoading()
+        viewModel.getRecipes().observe(this, Observer { recipes ->
+            progressBar.visibility = View.GONE
+            if (recipes == null) {
+                showError("Erreur ....")
+            } else {
+                updateList(recipes)
+            }
+        })
     }
 }

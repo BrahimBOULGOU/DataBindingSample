@@ -1,16 +1,18 @@
 package com.brash.databindingsample.viewmodel
 
+import androidx.lifecycle.LiveData
 import androidx.lifecycle.ViewModel
 import androidx.lifecycle.liveData
-import com.brash.databindingsample.network.Resource
+import com.brash.databindingsample.model.Recipes
 import com.brash.databindingsample.repository.RecipeRepository
+import com.brash.databindingsample.repository.RecipeRepositoryImp
 import kotlinx.coroutines.Dispatchers
 
 class MainViewModel (
-    private val recipeRepo: RecipeRepository
+    private val recipeRepo: RecipeRepository = RecipeRepositoryImp()
 ) : ViewModel() {
-    val recipe = liveData(Dispatchers.IO) {
-        emit(Resource.loading(null))
-        emit(recipeRepo.getRecipes())
+
+    fun getRecipes(): LiveData<Recipes?> {
+        return recipeRepo.getRecipes()
     }
 }

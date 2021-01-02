@@ -26,7 +26,9 @@ class RecipeAdapter (private val recipes: ArrayList<Recipe>) :
     override fun onBindViewHolder(holder: ListRecipeViewHolder, position: Int) {
         val recipe = recipes.get(position)
         holder.binding.recipe = recipe
-        holder.binding.imageRecipe.setImageUrl(recipe.image)
+        if(recipe.image.isNotEmpty()){
+            holder.binding.imageRecipe.setImageUrl(recipe.image)
+        }
     }
 
     inner class ListRecipeViewHolder(val binding: ItemLayoutBinding) : RecyclerView.ViewHolder(binding.root)
